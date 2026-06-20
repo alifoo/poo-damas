@@ -1,4 +1,4 @@
-package pacote1;
+package damas.modelo;
 
 /**
  * Interface que define o contrato para objetos que podem ser movimentados no tabuleiro.

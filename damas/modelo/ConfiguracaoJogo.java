@@ -1,4 +1,4 @@
-package pacote1;
+package damas.modelo;
 
 import java.io.Serializable;
 

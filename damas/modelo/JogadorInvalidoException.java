@@ -1,4 +1,4 @@
-package pacote1;
+package damas.modelo;
 
 /**
  * Exceção lançada quando um jogador inválido tenta realizar uma ação.

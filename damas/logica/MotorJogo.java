@@ -1,4 +1,6 @@
-package pacote1;
+package damas.logica;
+
+import damas.modelo.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package pacote1;
+package damas.modelo;
 
 /**
  * Peça branca do jogo de damas.
