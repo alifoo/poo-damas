@@ -1,0 +1,5 @@
+# Configuracao inicial do Jogo de Damas
+# Formato: nome,cor   (cor = BRANCA ou PRETA)
+# As brancas sempre comecam a partida.
+Alice,BRANCA
+Bob,PRETA
