@@ -1,4 +1,56 @@
 === Resultados da partida de Damas ===
-1. Alice moveu Peão BRANCA de B3 para C4
-2. Bob moveu Peão PRETA de A6 para B5
-3. Alice capturou com Peão BRANCA de C4 para A6 (capturou Peão PRETA em B5)
+1. Alice moveu Peão BRANCA de E3 para F4
+2. Bob moveu Peão PRETA de F6 para G5
+3. Alice moveu Peão BRANCA de C3 para D4
+4. Bob capturou com Peão PRETA de G5 para E3 (capturou Peão BRANCA em F4)
+5. Bob capturou com Peão PRETA de E3 para C5 (capturou Peão BRANCA em D4)
+6. Alice moveu Peão BRANCA de B2 para C3
+7. Bob moveu Peão PRETA de C5 para D4
+8. Alice capturou com Peão BRANCA de C3 para E5 (capturou Peão PRETA em D4)
+9. Bob capturou com Peão PRETA de D6 para F4 (capturou Peão BRANCA em E5)
+10. Alice capturou com Peão BRANCA de G3 para E5 (capturou Peão PRETA em F4)
+11. Bob moveu Peão PRETA de E7 para F6
+12. Alice moveu Peão BRANCA de D2 para E3
+13. Bob capturou com Peão PRETA de F6 para D4 (capturou Peão BRANCA em E5)
+14. Alice capturou com Peão BRANCA de E3 para C5 (capturou Peão PRETA em D4)
+15. Bob capturou com Peão PRETA de B6 para D4 (capturou Peão BRANCA em C5)
+16. Alice moveu Peão BRANCA de F2 para E3
+17. Bob capturou com Peão PRETA de D4 para F2 (capturou Peão BRANCA em E3)
+18. Alice capturou com Peão BRANCA de G1 para E3 (capturou Peão PRETA em F2)
+19. Bob moveu Peão PRETA de H6 para G5
+20. Alice moveu Peão BRANCA de E3 para D4
+21. Bob moveu Peão PRETA de G5 para F4
+22. Alice moveu Peão BRANCA de C1 para D2
+23. Bob moveu Peão PRETA de F4 para E3
+24. Alice capturou com Peão BRANCA de D2 para F4 (capturou Peão PRETA em E3)
+25. Bob moveu Peão PRETA de C7 para D6
+26. Alice moveu Peão BRANCA de D4 para C5
+27. Bob capturou com Peão PRETA de D6 para B4 (capturou Peão BRANCA em C5)
+28. Alice capturou com Peão BRANCA de A3 para C5 (capturou Peão PRETA em B4)
+29. Bob moveu Peão PRETA de B8 para C7
+30. Alice moveu Peão BRANCA de C5 para D6
+31. Bob capturou com Peão PRETA de C7 para E5 (capturou Peão BRANCA em D6)
+32. Bob capturou com Peão PRETA de E5 para G3 (capturou Peão BRANCA em F4)
+33. Alice capturou com Peão BRANCA de H2 para F4 (capturou Peão PRETA em G3)
+34. Bob moveu Peão PRETA de G7 para F6
+35. Alice moveu Peão BRANCA de F4 para G5
+36. Bob capturou com Peão PRETA de F6 para H4 (capturou Peão BRANCA em G5)
+37. Alice moveu Peão BRANCA de E1 para D2
+38. Bob moveu Peão PRETA de H4 para G3
+39. Alice moveu Peão BRANCA de D2 para C3
+40. Bob moveu Peão PRETA de G3 para F2
+41. Alice moveu Peão BRANCA de C3 para D4
+42. Bob moveu Peão PRETA de F2 para E1
+43. >>> PRETA promovida a Dama!
+44. Alice moveu Peão BRANCA de D4 para E5
+45. Bob moveu Dama PRETA de E1 para G3
+46. Alice moveu Peão BRANCA de E5 para F6
+47. Bob moveu Dama PRETA de G3 para D6
+48. Alice moveu Peão BRANCA de F6 para G7
+49. Bob capturou com Peão PRETA de H8 para F6 (capturou Peão BRANCA em G7)
+50. Alice moveu Peão BRANCA de A1 para B2
+51. Bob moveu Dama PRETA de D6 para B4
+52. Alice moveu Peão BRANCA de B2 para C3
+53. Bob capturou com Dama PRETA de B4 para E1 (capturou Peão BRANCA em C3)
+--- Fim de jogo ---
+RESULTADO FINAL: vitoria de Bob (PRETA).

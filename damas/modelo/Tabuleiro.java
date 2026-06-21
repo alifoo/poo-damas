@@ -16,12 +16,16 @@ public class Tabuleiro implements Serializable {
         casas = new Peca[8][8];
     }
 
-    /** Inicializa o tabuleiro com a configuração padrão de damas. */
+    /**
+     * Inicializa o tabuleiro com a configuração padrão de damas. As peças ficam
+     * nas casas escuras — convenção (linha+col) par —, de modo que a grande
+     * diagonal A1–H8 seja escura e o canto à esquerda de cada jogador seja preto.
+     */
     public void inicializar() {
         // Peças pretas nas linhas 5, 6, 7 (parte superior)
         for (int linha = 5; linha <= 7; linha++) {
             for (int col = 0; col < 8; col++) {
-                if ((linha + col) % 2 != 0) {
+                if ((linha + col) % 2 == 0) {
                     casas[linha][col] = new PecaPreta();
                 }
             }
@@ -29,7 +33,7 @@ public class Tabuleiro implements Serializable {
         // Peças brancas nas linhas 0, 1, 2 (parte inferior)
         for (int linha = 0; linha <= 2; linha++) {
             for (int col = 0; col < 8; col++) {
-                if ((linha + col) % 2 != 0) {
+                if ((linha + col) % 2 == 0) {
                     casas[linha][col] = new PecaBranca();
                 }
             }

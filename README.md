@@ -5,8 +5,7 @@ Aplicação orientada a objetos do Jogo de Damas, composta por dois programas:
 - **P1** — lê os dados iniciais de um arquivo texto (csv), cria os objetos
   persistentes (`ConfiguracaoJogo`) e os salva em **formato binário**.
 - **P2** — restaura os objetos do binário, interage com o usuário por
-  **interface gráfica** e grava os resultados parciais e finais em texto.
-  *(GUI em desenvolvimento — ver seção "Status".)*
+  **interface gráfica** (Swing) e grava os resultados parciais e finais em texto.
 
 ## Estrutura de pacotes
 
@@ -16,7 +15,7 @@ damas/
                ConfiguracaoJogo, Movimentavel, MovimentoInvalidoException,
                JogadorInvalidoException
   logica/   <- MotorJogo (regras do jogo)
-  app/      <- P1, Persistencia, RegistradorResultados   (P2: em breve)
+  app/      <- P1, P2, TabuleiroPanel, Persistencia, RegistradorResultados
 dados/
   jogadores.csv       <- dados iniciais (entrada do P1)
   configuracao.dat    <- binario gerado pelo P1 (entrada do P2)
@@ -82,13 +81,34 @@ java -cp out damas.app.P1 dados/naoexiste.csv /tmp/saida.dat
 
 ## 3. Rodar o P2 (restaura o binário + GUI)
 
-> **Em desenvolvimento.** A restauração do binário e a gravação de resultados
-> (`Persistencia`, `RegistradorResultados`) já estão prontas e testadas; falta a
-> interface gráfica. Quando concluída, o comando será:
+Requer o `dados/configuracao.dat` gerado pelo P1 (passo 2). Com arquivos padrão
+(`dados/configuracao.dat` -> `dados/resultados.txt`):
 
 ```bash
-java -cp out damas.app.P2            # (ainda não disponível)
+java -cp out damas.app.P2
 ```
+
+Ou informando binário de entrada e arquivo de resultados:
+
+```bash
+java -cp out damas.app.P2 dados/configuracao.dat dados/resultados.txt
+```
+
+### Como jogar
+
+- O P2 abre uma janela com o tabuleiro 8×8. As **brancas começam**.
+- Clique na **peça de origem** (fica destacada) e depois na **casa de destino**.
+- A barra inferior mostra de quem é a vez, o placar de capturas e avisa
+  **CAPTURA OBRIGATÓRIA** quando houver — nesse caso as peças obrigadas a jogar
+  (as que capturam o **maior número** de peças) ganham uma borda vermelha, e o
+  motor recusa qualquer outro lance.
+- Movimentos inválidos aparecem em vermelho na barra de status (sem travar o jogo).
+- Em uma captura múltipla, a mesma peça permanece selecionada até encerrar a sequência.
+- Ao promover, a peça vira **Dama** (anel dourado + "D").
+- No fim de jogo, uma janela anuncia o vencedor (ou empate) e o resultado é
+  gravado em `dados/resultados.txt`.
+
+> Requer um ambiente com interface gráfica (não funciona em terminal headless).
 
 ## Formato do arquivo de entrada (`dados/jogadores.csv`)
 
@@ -114,8 +134,19 @@ rm -rf out                          # remove os .class compilados
   encapsulamento, herança, polimorfismo, classe e método abstratos,
   interface e chamada polimórfica.
 
-**RA3 (P1/P2/persistência/GUI)**
+**RA3 (P1/P2/persistência/GUI) — completo**
 - [x] P1: csv -> objetos -> binário
 - [x] P2: restauração do binário
+- [x] P2: interface gráfica (Swing)
 - [x] P2: gravação de resultados parciais/finais em txt
-- [ ] P2: interface gráfica (em desenvolvimento)
+
+**Regras de Damas implementadas**
+- Movimento da peça comum (1 casa, só para frente) e da dama (várias casas,
+  frente/trás, caminho livre).
+- Captura obrigatória, para frente e para trás; dama captura à distância.
+- **Captura de maior número** obrigatória (escolhe a sequência que come mais).
+- Tomada em cadeia obrigatória até não haver mais captura.
+- Promoção a dama apenas ao **parar** na última linha (não no meio de uma cadeia).
+- Empate: 20 lances de damas / tripla repetição / 3 damas × 1 dama.
+- Tabuleiro orientado com a casa escura à esquerda de cada jogador (grande
+  diagonal A1–H8 escura).

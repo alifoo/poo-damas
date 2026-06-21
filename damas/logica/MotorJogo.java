@@ -26,8 +26,12 @@ public class MotorJogo {
     private int lancesDamaSemEvento;        // contador da regra de lances sucessivos de damas
     private Map<String, Integer> historicoPosicoes; // contador da regra de tripla repetição
     private boolean emEndgame3Damas1Dama;   // flag da regra 3 damas x 1 dama
-    private int lancesEmEndgame3Damas1Dama; // contador de lances 
+    private int lancesEmEndgame3Damas1Dama; // contador de lances
     private String motivoEmpate;            // null enquanto não houver empate
+
+    // --- Estado da tomada em cadeia em andamento (posição da peça; -1 se não há) ---
+    private int cadeiaLinha = -1;
+    private int cadeiaCol   = -1;
 
     public MotorJogo(ConfiguracaoJogo config) {
         this.tabuleiro     = config.getTabuleiro();
@@ -101,26 +105,51 @@ public class MotorJogo {
                 "A peça selecionada não pertence ao jogador atual.", jogadorAtual.getNome());
         }
 
-        // Verificar captura obrigatória
+        // Durante uma tomada em cadeia, o lance deve continuar com a MESMA peça.
+        if (cadeiaLinha != -1 && (origemL != cadeiaLinha || origemC != cadeiaCol)) {
+            throw new MovimentoInvalidoException(
+                "Tomada em cadeia em andamento: continue capturando com a mesma peça.",
+                origemL, origemC, destinoL, destinoC);
+        }
+
+        // Captura obrigatória precisa ser checada antes de um movimento simples
         boolean haCapturaObrigatoria = temCapturaObrigatoria();
         int dl = Math.abs(destinoL - origemL);
         int dc = Math.abs(destinoC - origemC);
 
-        if (dl == dc && dl > 0) {
-            if (dl == 1) {
-                // movimento simples
-                if (haCapturaObrigatoria) {
-                    throw new MovimentoInvalidoException(
-                        "Captura obrigatória disponível! Você deve capturar.", origemL, origemC, destinoL, destinoC);
-                }
-                return executarMovimentoSimples(peca, origemL, origemC, destinoL, destinoC);
-            } else {
-                return executarCaptura(peca, origemL, origemC, destinoL, destinoC);
-            }
-        } else {
+        if (!(dl == dc && dl > 0)) {
             throw new MovimentoInvalidoException(
-                "Distância de movimento inválida.", origemL, origemC, destinoL, destinoC);
+                "O movimento deve ser na diagonal.", origemL, origemC, destinoL, destinoC);
         }
+
+        // O tipo de lance é definido pela presença de peça no caminho — e não
+        // pela distância. Isso é essencial para a dama, que pode andar várias
+        // casas num movimento simples (sem captura), com o caminho livre.
+        if (existePecaNoCaminho(origemL, origemC, destinoL, destinoC)) {
+            return executarCaptura(peca, origemL, origemC, destinoL, destinoC);
+        } else {
+            if (haCapturaObrigatoria) {
+                throw new MovimentoInvalidoException(
+                    "Captura obrigatória disponível! Você deve capturar.", origemL, origemC, destinoL, destinoC);
+            }
+            return executarMovimentoSimples(peca, origemL, origemC, destinoL, destinoC);
+        }
+    }
+
+    /**
+     * Indica se há alguma peça nas casas entre origem e destino (exclusivo),
+     * percorrendo a diagonal. Usado para distinguir captura de movimento simples.
+     */
+    private boolean existePecaNoCaminho(int origemL, int origemC, int destinoL, int destinoC) {
+        int stepL = (destinoL - origemL) > 0 ? 1 : -1;
+        int stepC = (destinoC - origemC) > 0 ? 1 : -1;
+        int l = origemL + stepL, c = origemC + stepC;
+        while (l != destinoL) {
+            if (tabuleiro.getPeca(l, c) != null) return true;
+            l += stepL;
+            c += stepC;
+        }
+        return false;
     }
 
     /**
@@ -164,32 +193,62 @@ public class MotorJogo {
 
         int stepL = (destinoL - origemL) > 0 ? 1 : -1;
         int stepC = (destinoC - origemC) > 0 ? 1 : -1;
+
+        // Percorre TODO o caminho: deve haver exatamente uma peça (a capturada),
+        // e o restante das casas — antes e depois dela — precisa estar livre.
         int meiLinha = -1, meiCol = -1;
+        int pecasNoCaminho = 0;
         int l = origemL + stepL, c = origemC + stepC;
         while (l != destinoL) {
             if (tabuleiro.getPeca(l, c) != null) {
+                pecasNoCaminho++;
                 meiLinha = l;
                 meiCol = c;
-                break;
             }
             l += stepL;
             c += stepC;
         }
-        Peca capturada = (meiLinha != -1) ? tabuleiro.getPeca(meiLinha, meiCol) : null;
 
-        if (capturada == null || capturada.getCor() == peca.getCor()) {
+        if (pecasNoCaminho != 1) {
+            throw new MovimentoInvalidoException(
+                "Captura inválida: o caminho deve conter exatamente uma peça adversária e estar livre antes e depois dela.",
+                origemL, origemC, destinoL, destinoC);
+        }
+
+        Peca capturada = tabuleiro.getPeca(meiLinha, meiCol);
+        if (capturada.getCor() == peca.getCor()) {
             throw new MovimentoInvalidoException(
                 "Não há peça adversária para capturar.", origemL, origemC, destinoL, destinoC);
         }
 
-       
-        // Verificar se a distância do pulo é válida para o peão (deve pular exatamente 1 casa / andar 2 posições)
+        // Peça comum captura saltando exatamente uma casa (origem e destino a 2 de distância).
         if (!peca.isEDama()) {
-            int dl = Math.abs(destinoL - origemL);
-            if (dl != 2) {
+            int dist = Math.abs(destinoL - origemL);
+            if (dist != 2) {
                 throw new MovimentoInvalidoException(
-                    "Movimento de captura do peão deve pular exatamente uma casa.", origemL, origemC, destinoL, destinoC);
+                    "Peça comum deve capturar pulando exatamente uma casa.", origemL, origemC, destinoL, destinoC);
             }
+        }
+
+        // --- Regra da captura de maior número ---
+        // O lance escolhido deve fazer parte de uma sequência que captura o
+        // máximo possível. No primeiro salto, a peça escolhida tem de alcançar
+        // o máximo do jogador; em qualquer salto, o destino escolhido tem de
+        // manter o máximo alcançável por aquela peça.
+        boolean meioDeCadeia = (cadeiaLinha == origemL && cadeiaCol == origemC);
+        if (!meioDeCadeia) {
+            int maxJogador = maxCapturasJogador(jogadorAtual);
+            if (maxCapturasDaPeca(origemL, origemC, peca) < maxJogador) {
+                throw new MovimentoInvalidoException(
+                    "Há uma captura maior disponível com outra peça — a captura de maior número é obrigatória.",
+                    origemL, origemC, destinoL, destinoC);
+            }
+        }
+        int melhorDaPeca = maxCapturasDaPeca(origemL, origemC, peca);
+        if (1 + capturasAposSalto(peca, origemL, origemC, destinoL, destinoC, meiLinha, meiCol) < melhorDaPeca) {
+            throw new MovimentoInvalidoException(
+                "Existe uma captura que come mais peças a partir desta peça — a captura de maior número é obrigatória.",
+                origemL, origemC, destinoL, destinoC);
         }
 
         tabuleiro.removerPeca(meiLinha, meiCol);
@@ -206,17 +265,138 @@ public class MotorJogo {
                      " (capturou " + capturada + " em " + posicaoStr(meiLinha, meiCol) + ")";
         logMovimentos.add(mov);
 
-        verificarPromocao(peca, destinoL);
-
-        // Verificar captura em cadeia
+        // Captura em cadeia: a mesma peça deve continuar. A promoção só é
+        // verificada quando a peça PARA (fim da cadeia) — uma peça comum não
+        // coroa se apenas passa pela última linha no meio de uma tomada em cadeia.
         if (peca.temCapturaDisponivel(destinoL, destinoC, tabuleiro)) {
-            return true; // permite novo movimento da mesma peça
+            cadeiaLinha = destinoL;
+            cadeiaCol   = destinoC;
+            return true; // permite novo salto da mesma peça
         }
 
-        // A tomada em cadeia (se houve) terminou aqui — agora sim o lance se encerra.
+        cadeiaLinha = -1;
+        cadeiaCol   = -1;
+        verificarPromocao(peca, destinoL);
         registrarLanceParaEmpate(peca, true);
         alternarJogador();
         return false;
+    }
+
+    // ------------------------------------------------------------------
+    // Apoio à regra da captura de maior número (busca recursiva de saltos)
+    // ------------------------------------------------------------------
+
+    /** Um salto de captura: para onde a peça vai e qual peça é capturada. */
+    private static final class Salto {
+        final int destL, destC, midL, midC;
+        Salto(int destL, int destC, int midL, int midC) {
+            this.destL = destL; this.destC = destC; this.midL = midL; this.midC = midC;
+        }
+    }
+
+    private boolean dentro(int linha, int col) {
+        return linha >= 0 && linha <= 7 && col >= 0 && col <= 7;
+    }
+
+    /** Lista os saltos de captura imediatos de uma peça na posição dada. */
+    private List<Salto> saltosImediatos(int linha, int col, Peca peca) {
+        List<Salto> saltos = new ArrayList<>();
+        int[] dirs = {-1, 1};
+        for (int dL : dirs) {
+            for (int dC : dirs) {
+                if (peca.isEDama()) {
+                    // anda até a primeira peça do caminho
+                    int l = linha + dL, c = col + dC;
+                    while (dentro(l, c) && tabuleiro.getPeca(l, c) == null) { l += dL; c += dC; }
+                    if (!dentro(l, c)) continue;
+                    if (tabuleiro.getPeca(l, c).getCor() == peca.getCor()) continue; // própria bloqueia
+                    // cada casa livre após a adversária é um destino possível
+                    int dl = l + dL, dc = c + dC;
+                    while (dentro(dl, dc) && tabuleiro.getPeca(dl, dc) == null) {
+                        saltos.add(new Salto(dl, dc, l, c));
+                        dl += dL; dc += dC;
+                    }
+                } else {
+                    int ml = linha + dL, mc = col + dC;
+                    int destL = linha + 2 * dL, destC = col + 2 * dC;
+                    if (!dentro(destL, destC)) continue;
+                    Peca alvo = tabuleiro.getPeca(ml, mc);
+                    if (alvo != null && alvo.getCor() != peca.getCor()
+                            && tabuleiro.getPeca(destL, destC) == null) {
+                        saltos.add(new Salto(destL, destC, ml, mc));
+                    }
+                }
+            }
+        }
+        return saltos;
+    }
+
+    /** Máximo de capturas alcançável a partir de uma peça, simulando recursivamente. */
+    private int maxCapturasDaPeca(int linha, int col, Peca peca) {
+        List<Salto> saltos = saltosImediatos(linha, col, peca);
+        int melhor = 0;
+        for (Salto s : saltos) {
+            int total = 1 + capturasAposSalto(peca, linha, col, s.destL, s.destC, s.midL, s.midC);
+            if (total > melhor) melhor = total;
+        }
+        return melhor;
+    }
+
+    /** Simula um salto (sem coroar) e devolve o máximo de capturas seguintes daquela peça. */
+    private int capturasAposSalto(Peca peca, int origemL, int origemC,
+                                  int destinoL, int destinoC, int midL, int midC) {
+        Peca capturada = tabuleiro.getPeca(midL, midC);
+        tabuleiro.removerPeca(midL, midC);
+        tabuleiro.removerPeca(origemL, origemC);
+        tabuleiro.setPeca(destinoL, destinoC, peca);
+
+        int resultado = maxCapturasDaPeca(destinoL, destinoC, peca);
+
+        // desfaz a simulação
+        tabuleiro.removerPeca(destinoL, destinoC);
+        tabuleiro.setPeca(origemL, origemC, peca);
+        tabuleiro.setPeca(midL, midC, capturada);
+        return resultado;
+    }
+
+    /** Máximo de capturas que o jogador consegue neste lance, somando todas as suas peças. */
+    private int maxCapturasJogador(Jogador jogador) {
+        int melhor = 0;
+        for (int l = 0; l < 8; l++) {
+            for (int c = 0; c < 8; c++) {
+                Peca p = tabuleiro.getPeca(l, c);
+                if (p != null && p.pertenceAo(jogador)) {
+                    int m = maxCapturasDaPeca(l, c, p);
+                    if (m > melhor) melhor = m;
+                }
+            }
+        }
+        return melhor;
+    }
+
+    /**
+     * Posições das peças que o jogador atual é OBRIGADO a usar neste lance
+     * (as que alcançam a captura de maior número). Vazio se não há captura.
+     * Usado pela interface gráfica para destacar as peças corretas.
+     */
+    public List<int[]> pecasObrigadasACapturar() {
+        List<int[]> obrig = new ArrayList<>();
+        if (cadeiaLinha != -1) {                 // em cadeia: só a peça em curso
+            obrig.add(new int[]{cadeiaLinha, cadeiaCol});
+            return obrig;
+        }
+        int maxJogador = maxCapturasJogador(jogadorAtual);
+        if (maxJogador == 0) return obrig;
+        for (int l = 0; l < 8; l++) {
+            for (int c = 0; c < 8; c++) {
+                Peca p = tabuleiro.getPeca(l, c);
+                if (p != null && p.pertenceAo(jogadorAtual)
+                        && maxCapturasDaPeca(l, c, p) == maxJogador) {
+                    obrig.add(new int[]{l, c});
+                }
+            }
+        }
+        return obrig;
     }
 
     private void verificarPromocao(Peca peca, int linha) {
