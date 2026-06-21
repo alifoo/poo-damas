@@ -1,0 +1,4 @@
+=== Resultados da partida de Damas ===
+1. Alice moveu Peão BRANCA de B3 para C4
+2. Bob moveu Peão PRETA de A6 para B5
+3. Alice capturou com Peão BRANCA de C4 para A6 (capturou Peão PRETA em B5)

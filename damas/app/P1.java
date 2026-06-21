@@ -2,9 +2,7 @@ package damas.app;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,7 @@ public class P1 {
 
         try {
             ConfiguracaoJogo config = lerConfiguracao(entrada);
-            salvarBinario(config, saida);
+            Persistencia.salvar(config, saida);
 
             System.out.println("P1: dados lidos de '" + entrada + "'.");
             System.out.println("P1: configuracao inicial salva em binario em '" + saida + "'.");
@@ -129,19 +127,6 @@ public class P1 {
         if (jogadores.get(0).getCor() == jogadores.get(1).getCor()) {
             throw new JogadorInvalidoException(
                 "Os dois jogadores devem ter cores diferentes (uma BRANCA e uma PRETA).");
-        }
-    }
-
-    /**
-     * Serializa a configuracao em formato binario.
-     * Metodo que REPASSA excecoes (clausula throws, sem try-catch) — requisito RA2.
-     */
-    private static void salvarBinario(ConfiguracaoJogo config, String caminho) throws IOException {
-        ObjectOutputStream saida = new ObjectOutputStream(new FileOutputStream(caminho));
-        try {
-            saida.writeObject(config);
-        } finally {
-            saida.close();
         }
     }
 }
