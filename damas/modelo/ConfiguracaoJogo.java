@@ -2,10 +2,6 @@ package damas.modelo;
 
 import java.io.Serializable;
 
-/**
- * Encapsula a configuração inicial do jogo: jogadores e tabuleiro.
- * Este objeto é persistido em binário pelo P1 e restaurado pelo P2 (requisito RA3).
- */
 public class ConfiguracaoJogo implements Serializable {
 
     private static final long serialVersionUID = 1L;

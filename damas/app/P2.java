@@ -16,19 +16,6 @@ import javax.swing.SwingUtilities;
 import damas.logica.MotorJogo;
 import damas.modelo.ConfiguracaoJogo;
 
-/**
- * Programa P2 (requisito RA3).
- *
- * Restaura em memoria a ConfiguracaoJogo salva em binario pelo P1, exibe o
- * tabuleiro em interface grafica (Swing) para a interacao com os jogadores e
- * grava os resultados parciais e finais em arquivo texto.
- *
- * Uso:
- *   java damas.app.P2 [arquivoBinario.dat] [arquivoResultados.txt]
- * Padroes:
- *   binario     = dados/configuracao.dat
- *   resultados  = dados/resultados.txt
- */
 public class P2 {
 
     private static final String BIN_PADRAO = "dados/configuracao.dat";
@@ -38,7 +25,6 @@ public class P2 {
         String binario    = (args.length > 0) ? args[0] : BIN_PADRAO;
         String resultados = (args.length > 1) ? args[1] : RES_PADRAO;
 
-        // 1) Restaura os objetos persistentes do binario
         ConfiguracaoJogo config;
         try {
             config = Persistencia.carregar(binario);
@@ -51,7 +37,6 @@ public class P2 {
             return;
         }
 
-        // 2) Abre o arquivo de resultados
         RegistradorResultados registrador;
         try {
             registrador = new RegistradorResultados(resultados);
@@ -61,7 +46,6 @@ public class P2 {
             return;
         }
 
-        // 3) Monta a interface grafica na thread do Swing
         final ConfiguracaoJogo cfg = config;
         final RegistradorResultados reg = registrador;
         SwingUtilities.invokeLater(() -> construirGUI(cfg, reg));
@@ -86,7 +70,6 @@ public class P2 {
         janela.add(painel, BorderLayout.CENTER);
         janela.add(status, BorderLayout.SOUTH);
 
-        // Fecha o arquivo de resultados ao sair (garante o flush final)
         janela.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
                 registrador.close();

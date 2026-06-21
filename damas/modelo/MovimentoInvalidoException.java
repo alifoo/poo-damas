@@ -1,9 +1,5 @@
 package damas.modelo;
 
-/**
- * Exceção lançada quando um movimento de peça é inválido.
- * Derivada de Exception (requisito RA2 - classe de exceção customizada).
- */
 public class MovimentoInvalidoException extends Exception {
 
     private int origemLinha;

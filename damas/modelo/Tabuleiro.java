@@ -2,10 +2,6 @@ package damas.modelo;
 
 import java.io.Serializable;
 
-/**
- * Representa o tabuleiro 8x8 do jogo de damas.
- * Implementa Serializable para persistência (requisito RA3).
- */
 public class Tabuleiro implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,13 +12,7 @@ public class Tabuleiro implements Serializable {
         casas = new Peca[8][8];
     }
 
-    /**
-     * Inicializa o tabuleiro com a configuração padrão de damas. As peças ficam
-     * nas casas escuras — convenção (linha+col) par —, de modo que a grande
-     * diagonal A1–H8 seja escura e o canto à esquerda de cada jogador seja preto.
-     */
     public void inicializar() {
-        // Peças pretas nas linhas 5, 6, 7 (parte superior)
         for (int linha = 5; linha <= 7; linha++) {
             for (int col = 0; col < 8; col++) {
                 if ((linha + col) % 2 == 0) {
@@ -30,7 +20,6 @@ public class Tabuleiro implements Serializable {
                 }
             }
         }
-        // Peças brancas nas linhas 0, 1, 2 (parte inferior)
         for (int linha = 0; linha <= 2; linha++) {
             for (int col = 0; col < 8; col++) {
                 if ((linha + col) % 2 == 0) {
@@ -53,7 +42,6 @@ public class Tabuleiro implements Serializable {
         casas[linha][col] = null;
     }
 
-    /** Conta peças de uma cor no tabuleiro. */
     public int contarPecas(Peca.Cor cor) {
         int count = 0;
         for (int l = 0; l < 8; l++)
@@ -62,7 +50,6 @@ public class Tabuleiro implements Serializable {
         return count;
     }
 
-    /** Representação textual do tabuleiro para logs. */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -81,5 +68,4 @@ public class Tabuleiro implements Serializable {
         return sb.toString();
     }
 
-    
 }

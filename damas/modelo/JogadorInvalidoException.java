@@ -1,9 +1,5 @@
 package damas.modelo;
 
-/**
- * Exceção lançada quando um jogador inválido tenta realizar uma ação.
- * Derivada de Exception (requisito RA2 - segunda classe de exceção customizada).
- */
 public class JogadorInvalidoException extends Exception {
 
     private String nomeJogador;

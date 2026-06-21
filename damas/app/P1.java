@@ -11,19 +11,6 @@ import damas.modelo.Jogador;
 import damas.modelo.JogadorInvalidoException;
 import damas.modelo.Peca;
 
-/**
- * Programa P1 (requisito RA3).
- *
- * Le os dados iniciais de um arquivo texto (csv), cria o conjunto inicial de
- * objetos persistentes (ConfiguracaoJogo, que ja monta o Tabuleiro) e os salva
- * em formato binario para que o P2 possa restaura-los depois.
- *
- * Uso:
- *   java damas.app.P1 [arquivoEntrada.csv] [arquivoSaida.dat]
- * Padroes:
- *   entrada = dados/jogadores.csv
- *   saida   = dados/configuracao.dat
- */
 public class P1 {
 
     private static final String ENTRADA_PADRAO = "dados/jogadores.csv";
@@ -47,10 +34,6 @@ public class P1 {
         }
     }
 
-    /**
-     * Le o arquivo csv e constroi a ConfiguracaoJogo.
-     * Metodo que REPASSA excecoes (clausula throws, sem try-catch) — requisito RA2.
-     */
     private static ConfiguracaoJogo lerConfiguracao(String caminho)
             throws IOException, JogadorInvalidoException {
 
@@ -64,7 +47,7 @@ public class P1 {
                 numeroLinha++;
                 linha = linha.trim();
                 if (linha.isEmpty() || linha.startsWith("#")) {
-                    continue; // ignora linhas vazias e comentarios
+                    continue;
                 }
                 jogadores.add(parsearJogador(linha, numeroLinha));
             }
@@ -82,10 +65,6 @@ public class P1 {
         return new ConfiguracaoJogo(branco, preto);
     }
 
-    /**
-     * Converte uma linha "nome,cor" em um Jogador.
-     * Lanca JogadorInvalidoException (throw) — requisito RA2.
-     */
     private static Jogador parsearJogador(String linha, int numeroLinha)
             throws JogadorInvalidoException {
 
@@ -115,10 +94,6 @@ public class P1 {
         return new Jogador(nome, cor);
     }
 
-    /**
-     * Garante que ha exatamente dois jogadores, um de cada cor.
-     * Lanca JogadorInvalidoException (throw) — requisito RA2.
-     */
     private static void validar(List<Jogador> jogadores) throws JogadorInvalidoException {
         if (jogadores.size() != 2) {
             throw new JogadorInvalidoException(

@@ -2,10 +2,6 @@ package damas.modelo;
 
 import java.io.Serializable;
 
-/**
- * Representa um jogador do jogo de damas.
- * Implementa Serializable para persistência (requisito RA3).
- */
 public class Jogador implements Serializable {
 
     private static final long serialVersionUID = 1L;

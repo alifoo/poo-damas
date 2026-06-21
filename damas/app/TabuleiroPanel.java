@@ -21,22 +21,14 @@ import damas.modelo.MovimentoInvalidoException;
 import damas.modelo.Peca;
 import damas.modelo.Tabuleiro;
 
-/**
- * Painel Swing que desenha o tabuleiro 8x8 e trata a interacao com o usuario
- * (requisito RA3 — interface grafica do P2).
- *
- * Fluxo: o jogador clica na peca de origem e depois na casa de destino. O painel
- * delega a regra ao MotorJogo, exibe erros (excecoes) na barra de status, trata
- * captura em cadeia e grava cada lance via RegistradorResultados.
- */
 public class TabuleiroPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
     private static final int CELULA       = 70;
-    private static final int LADO         = 8 * CELULA;        // 560
-    private static final int MARGEM_ESQ   = 28;                // numeros das linhas
-    private static final int MARGEM_BAIXO = 26;                // letras das colunas
+    private static final int LADO         = 8 * CELULA;
+    private static final int MARGEM_ESQ   = 28;
+    private static final int MARGEM_BAIXO = 26;
 
     private static final Color COR_CLARA     = new Color(238, 238, 210);
     private static final Color COR_ESCURA    = new Color(118, 150, 86);
@@ -69,12 +61,9 @@ public class TabuleiroPanel extends JPanel {
         atualizarStatus("Selecione uma peca para mover.");
     }
 
-    // ----------------------------------------------------------------- interacao
-
     private void tratarClique(int mx, int my) {
         if (jogoEncerrado) return;
 
-        // converte pixel -> casa do tabuleiro (linha 0 embaixo, 7 em cima)
         if (mx < MARGEM_ESQ || my >= LADO) return;
         int col = (mx - MARGEM_ESQ) / CELULA;
         int linha = 7 - (my / CELULA);
@@ -85,7 +74,6 @@ public class TabuleiroPanel extends JPanel {
             return;
         }
 
-        // Permite trocar de peca (exceto durante captura em cadeia)
         if (!capturaEmCadeia) {
             Peca p = tabuleiro.getPeca(linha, col);
             if (p != null && p.pertenceAo(motor.getJogadorAtual())
@@ -116,7 +104,6 @@ public class TabuleiroPanel extends JPanel {
             registrador.registrarParciais(motor.getLog());
 
             if (continua) {
-                // captura em cadeia: a mesma peca deve continuar capturando
                 selLinha = destinoL;
                 selCol = destinoC;
                 capturaEmCadeia = true;
@@ -154,8 +141,6 @@ public class TabuleiroPanel extends JPanel {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // ----------------------------------------------------------------- status
-
     private void atualizarStatus(String extra) {
         status.setForeground(Color.DARK_GRAY);
         Jogador b = motor.getJogadorBranco();
@@ -182,15 +167,12 @@ public class TabuleiroPanel extends JPanel {
         status.setText("Movimento invalido: " + msg);
     }
 
-    // ----------------------------------------------------------------- desenho
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Peças que o jogador é obrigado a usar (regra da captura de maior número)
         boolean[][] obrigatoria = new boolean[8][8];
         if (!jogoEncerrado) {
             for (int[] pos : motor.pecasObrigadasACapturar()) {
@@ -207,13 +189,11 @@ public class TabuleiroPanel extends JPanel {
                 g2.setColor(escura ? COR_ESCURA : COR_CLARA);
                 g2.fillRect(x, y, CELULA, CELULA);
 
-                // destaque da peca selecionada
                 if (linha == selLinha && col == selCol) {
                     g2.setColor(COR_SELECAO);
                     g2.fillRect(x, y, CELULA, CELULA);
                 }
 
-                // realce das pecas obrigadas a capturar
                 if (obrigatoria[linha][col]) {
                     g2.setColor(COR_CAPTURA);
                     g2.setStroke(new BasicStroke(3));
@@ -252,12 +232,10 @@ public class TabuleiroPanel extends JPanel {
     private void desenharRotulos(Graphics2D g2) {
         g2.setColor(Color.DARK_GRAY);
         g2.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        // numeros das linhas (1 embaixo .. 8 em cima)
         for (int linha = 0; linha <= 7; linha++) {
             int y = (7 - linha) * CELULA + CELULA / 2 + 5;
             g2.drawString(String.valueOf(linha + 1), 9, y);
         }
-        // letras das colunas (A..H)
         for (int col = 0; col <= 7; col++) {
             int x = MARGEM_ESQ + col * CELULA + CELULA / 2 - 4;
             g2.drawString(String.valueOf((char) ('A' + col)), x, LADO + 18);
