@@ -1,5 +1,7 @@
 # Jogo de Damas — Trabalho RA2 / RA3 (POO)
 
+Versão com comentários.
+
 Aplicação orientada a objetos do Jogo de Damas, composta por dois programas:
 
 - **P1** — lê os dados iniciais de um arquivo texto (csv), cria os objetos
